@@ -4,37 +4,7 @@ import { THEME_PRESETS } from '@/config/themes';
 import { COMPONENT_REGISTRY } from '@/config/components';
 import { generateId } from '@/lib/utils';
 
-const INITIAL_ITEMS: ComponentItem[] = [
-  {
-    id: generateId(),
-    type: 'Alert',
-    props: {
-      title: '全局背景切换已恢复 ✨',
-      description: '现在你可以通过"色彩与边界"面板,或者系统预设,完美改变整个项目的底色啦!',
-      variant: 'default',
-      width: 'full'
-    }
-  },
-  {
-    id: generateId(),
-    type: 'Progress',
-    props: {
-      value: 100,
-      label: '引擎修复进度',
-      width: 'full'
-    }
-  },
-  {
-    id: generateId(),
-    type: 'Button',
-    props: {
-      children: '开始构建项目',
-      variant: 'default',
-      size: 'default',
-      width: 'auto'
-    }
-  }
-];
+const INITIAL_ITEMS: ComponentItem[] = [];
 
 export const useForgeStore = create<ForgeStore>((set, get) => ({
   isDarkMode: false,

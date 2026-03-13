@@ -38,7 +38,7 @@ const App: React.FC = () => {
 };
 
 const Footer: React.FC = () => {
-  const { layout, history, historyStep, clearCanvas } = useForgeStore();
+  const { layout, history, historyStep, canvasItems, clearCanvas } = useForgeStore();
 
   return (
     <footer 
@@ -50,6 +50,7 @@ const Footer: React.FC = () => {
           <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
           History: {historyStep}/{history.length - 1}
         </span>
+        <span>Components: {canvasItems.length}</span>
       </div>
       <div className="flex gap-4">
         <button 

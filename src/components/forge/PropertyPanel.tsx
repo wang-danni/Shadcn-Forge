@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SlidersHorizontal, Code2, X, Sparkles, Loader2 } from 'lucide-react';
 import { useForgeStore } from '@/store/forgeStore';
 import { COMPONENT_REGISTRY } from '@/config/components';
-import { fetchGemini } from '@/lib/gemini';
+import { fetchAI } from '@/lib/ai';
 
 export const PropertyPanel: React.FC = () => {
   const {
@@ -25,7 +25,7 @@ export const PropertyPanel: React.FC = () => {
     try {
       const sysPrompt =
         '你是一个资深的UX文案专家。请将用户提供的UI文案重写得更加专业、自然、简练，适合用于现代Web应用。直接返回修改后的文本，不要带有任何引号或多余解释。';
-      const newText = await fetchGemini(currentValue, sysPrompt, 'text/plain');
+      const newText = await fetchAI(currentValue, sysPrompt, 'text/plain');
       if (newText) updateComponentProp(id, propKey, newText.trim());
     } catch (err) {
       console.error('Rewrite failed', err);

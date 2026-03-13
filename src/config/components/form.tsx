@@ -1,11 +1,33 @@
-import { ComponentConfig, ButtonProps, InputProps, TextareaProps, SwitchProps, CheckboxProps, Theme, ComponentItem } from '@/types';
-import { MousePointer2, Type, AlignLeft, ToggleLeft, CheckSquare } from 'lucide-react';
+import { ComponentConfig, ButtonProps, InputProps, TextareaProps, SwitchProps, CheckboxProps, Theme, ComponentItem, SelectProps } from '@/types';
+import { MousePointer2, Type, AlignLeft, ToggleLeft, CheckSquare, ChevronDownSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
+
+const withDimensionStyles = (item?: ComponentItem) => ({
+  width:
+    item?.style?.width === 'full'
+      ? '100%'
+      : item?.style?.width === 'auto' || !item?.style?.width
+        ? undefined
+        : item.style.width,
+  height:
+    item?.style?.height === 'full'
+      ? '100%'
+      : item?.style?.height === 'auto' || !item?.style?.height
+        ? undefined
+        : item.style.height
+});
+
+const splitByComma = (value: string) =>
+  value
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
 
 export const formComponents: Record<string, ComponentConfig> = {
   Button: {
@@ -42,7 +64,7 @@ export const formComponents: Record<string, ComponentConfig> = {
         borderColor: styleFromItem.borderColor ?? (buttonProps.variant === 'outline' ? theme?.border : undefined),
         padding: styleFromItem.padding !== undefined ? `${styleFromItem.padding}px` : undefined,
         fontSize: styleFromItem.fontSize !== undefined ? `${styleFromItem.fontSize}px` : undefined,
-        width: styleFromItem.width === 'full' ? '100%' : (styleFromItem.width === 'auto' || !styleFromItem.width ? undefined : styleFromItem.width)
+        ...withDimensionStyles(item)
       };
        return (
          <Button 
@@ -81,7 +103,7 @@ export const formComponents: Record<string, ComponentConfig> = {
         borderWidth: styleFromItem.borderWidth !== undefined ? `${styleFromItem.borderWidth}px` : (theme?.borderWidth ? `${theme.borderWidth}px` : undefined),
         padding: styleFromItem.padding !== undefined ? `${styleFromItem.padding}px` : undefined,
         fontSize: styleFromItem.fontSize !== undefined ? `${styleFromItem.fontSize}px` : undefined,
-        width: styleFromItem.width === 'full' ? '100%' : (styleFromItem.width === 'auto' || !styleFromItem.width ? undefined : styleFromItem.width)
+        ...withDimensionStyles(item)
       };
       return (
         <div className="w-full space-y-2">
@@ -118,7 +140,7 @@ export const formComponents: Record<string, ComponentConfig> = {
         borderWidth: styleFromItem.borderWidth !== undefined ? `${styleFromItem.borderWidth}px` : (theme?.borderWidth ? `${theme.borderWidth}px` : undefined),
         padding: styleFromItem.padding !== undefined ? `${styleFromItem.padding}px` : undefined,
         fontSize: styleFromItem.fontSize !== undefined ? `${styleFromItem.fontSize}px` : undefined,
-        width: styleFromItem.width === 'full' ? '100%' : (styleFromItem.width === 'auto' || !styleFromItem.width ? undefined : styleFromItem.width)
+        ...withDimensionStyles(item)
       };
       return (
         <div className="w-full space-y-2">
@@ -130,6 +152,32 @@ export const formComponents: Record<string, ComponentConfig> = {
           />
         </div>
       );
+    }
+  },
+
+  Select: {
+    name: '选择器 (Select)',
+    icon: <ChevronDownSquare size={14} />,
+    category: 'Forms',
+    defaultProps: {
+      placeholder: '选择一个选项',
+      options: '个人版,团队版,企业版'
+    },
+    render: (props, theme?: Theme, _layout?: any, item?: ComponentItem) => {
+      const selectProps = props as unknown as SelectProps;
+      const styleFromItem = item?.style || {};
+      const mergedStyle: any = {
+        backgroundColor: styleFromItem.backgroundColor ?? theme?.background,
+        borderColor: styleFromItem.borderColor ?? theme?.border,
+        color: styleFromItem.color ?? theme?.foreground,
+        borderRadius: styleFromItem.borderRadius !== undefined ? `${styleFromItem.borderRadius}px` : (theme ? `${theme.radius}px` : undefined),
+        borderWidth: styleFromItem.borderWidth !== undefined ? `${styleFromItem.borderWidth}px` : (theme?.borderWidth ? `${theme.borderWidth}px` : undefined),
+        padding: styleFromItem.padding !== undefined ? `${styleFromItem.padding}px` : undefined,
+        fontSize: styleFromItem.fontSize !== undefined ? `${styleFromItem.fontSize}px` : undefined,
+        ...withDimensionStyles(item)
+      };
+
+      return <Select placeholder={selectProps.placeholder} options={splitByComma(selectProps.options)} style={mergedStyle} />;
     }
   },
 

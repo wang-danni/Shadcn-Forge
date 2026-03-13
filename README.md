@@ -60,6 +60,24 @@
    pnpm dev
    ```
 
+  如果要使用 AI 生成功能，需要先在项目根目录创建 `.env` 文件：
+
+  ```env
+    AI_PROVIDER=qwen
+    AI_API_KEY=你的_DashScope_API_Key
+    AI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+    AI_MODEL=qwen-flash
+    VITE_AI_MODEL=qwen-flash
+  VITE_AI_PROXY_TARGET=http://localhost:8787
+  ```
+
+  开发时需要同时启动前端和 AI 代理服务：
+
+  ```powershell
+  pnpm dev:api
+  pnpm dev
+  ```
+
 3. 构建生产包：
 
    ```powershell
@@ -81,6 +99,19 @@
 3. 选中组件后使用侧边栏编辑其属性与样式，修改会立即反映在画布。
 4. 可为组件设置布局方向（row / column）。连续的 row 项目会合并在同一 flex 行中渲染。
 5. 使用“导出”功能选择目标语言，复制或下载生成的代码。
+6. 使用顶部“AI 智能构建”输入自然语言描述，例如“生成一个登录卡片，包含邮箱输入框、密码输入框和登录按钮”，系统会调用当前配置的 AI 提供商返回结构化组件数据并追加到当前画布。
+
+---
+
+## AI 生成功能说明
+
+- AI 入口位于 [src/components/forge/AIPrompt.tsx](src/components/forge/AIPrompt.tsx)，按钮挂载在 [src/components/forge/Toolbar.tsx](src/components/forge/Toolbar.tsx)。
+- 模型调用封装位于 [src/lib/ai.ts](src/lib/ai.ts)，前端默认请求本地 `/api/ai/generate` 代理接口。
+- 后端代理位于 `server/index.mjs`，现已支持 `gemini`、`qwen`、`openai-compatible` 和 `deepseek` 四类提供商。
+- 如果你要接通义千问，推荐直接配置 `AI_PROVIDER=qwen`、`AI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1`、`AI_MODEL=qwen-flash`。
+- 如果你要接 DeepSeek，推荐直接配置 `AI_PROVIDER=deepseek`、`AI_BASE_URL=https://api.deepseek.com/v1`、`AI_MODEL=deepseek-chat`。
+- AI 返回的不是源码，而是组件 JSON；前端会把这些结果转换成 `ComponentItem` 写入 Zustand store，再由画布和导出模块消费。
+- 当前版本已经支持本地后端代理，浏览器不再直接暴露供应商密钥；如果要上线，建议继续在服务端补充鉴权、限流和日志。
 
 ---
 

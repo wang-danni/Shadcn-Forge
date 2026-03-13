@@ -17,6 +17,7 @@ export const Sidebar: React.FC = () => {
 
   // 获取当前选中的组件
   const activeComponent = canvasItems.find(item => item.id === activeComponentId);
+  const activeDirection = activeComponent ? (activeComponent.style?.direction ?? layout.direction) : layout.direction;
 
   return (
     <aside 
@@ -214,6 +215,114 @@ export const Sidebar: React.FC = () => {
                 </div>
               </div>
 
+              {activeDirection === 'row' && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      横向位置 (Horizontal)
+                    </label>
+                    <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">
+                      {activeComponent.style?.horizontalOffset ?? 0}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={activeComponent.style?.horizontalOffset ?? 0}
+                    onChange={(e) => updateComponentStyle(activeComponent.id, { horizontalOffset: parseInt(e.target.value) })}
+                    className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:shadow-md"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                    <span>左侧</span>
+                    <span>任意位置</span>
+                    <span>右侧</span>
+                  </div>
+                </div>
+              )}
+
+              {/* 单组件宽度 */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    宽度 (Width)
+                  </label>
+                  <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">
+                    {activeComponent.style?.width ?? 'auto'}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => updateComponentStyle(activeComponent.id, { width: 'auto' })}
+                    className={`flex-1 py-1 text-xs rounded ${
+                      (activeComponent.style?.width ?? 'auto') === 'auto'
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    自适应
+                  </button>
+                  <button
+                    onClick={() => updateComponentStyle(activeComponent.id, { width: 'full', alignSelf: 'stretch' })}
+                    className={`flex-1 py-1 text-xs rounded ${
+                      activeComponent.style?.width === 'full'
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    铺满
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={typeof activeComponent.style?.width === 'string' ? activeComponent.style.width : 'auto'}
+                  onChange={(e) => updateComponentStyle(activeComponent.id, { width: e.target.value || 'auto' })}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md px-2 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="例如 320px / 50% / auto"
+                />
+              </div>
+
+              {/* 单组件高度 */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    高度 (Height)
+                  </label>
+                  <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">
+                    {activeComponent.style?.height ?? 'auto'}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => updateComponentStyle(activeComponent.id, { height: 'auto' })}
+                    className={`flex-1 py-1 text-xs rounded ${
+                      (activeComponent.style?.height ?? 'auto') === 'auto'
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    自适应
+                  </button>
+                  <button
+                    onClick={() => updateComponentStyle(activeComponent.id, { height: 'full' })}
+                    className={`flex-1 py-1 text-xs rounded ${
+                      activeComponent.style?.height === 'full'
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    铺满
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={typeof activeComponent.style?.height === 'string' ? activeComponent.style.height : 'auto'}
+                  onChange={(e) => updateComponentStyle(activeComponent.id, { height: e.target.value || 'auto' })}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md px-2 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="例如 56px / 100% / auto"
+                />
+              </div>
+
               {/* 重置按钮 */}
               <button
                 onClick={() => {
@@ -222,7 +331,12 @@ export const Sidebar: React.FC = () => {
                     color: undefined,
                     borderColor: undefined,
                     borderRadius: undefined,
-                    borderWidth: undefined
+                    borderWidth: undefined,
+                    direction: undefined,
+                    width: undefined,
+                    height: undefined,
+                    alignSelf: undefined,
+                    horizontalOffset: undefined
                   });
                 }}
                 className="w-full py-2 px-3 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
@@ -383,9 +497,10 @@ export const Sidebar: React.FC = () => {
             <div className="space-y-4">
               {/* 按分类显示 */}
               {Object.entries({
-                '基础输入': ['Button', 'Input', 'Textarea'],
-                '数据展示': ['Card', 'Badge', 'Avatar', 'Alert', 'Progress'],
-                '交互组件': ['Switch', 'Checkbox', 'Slider', 'Spinner']
+                '基础输入': ['Button', 'Input', 'Textarea', 'Select', 'Checkbox', 'Switch'],
+                '数据展示': ['Card', 'Badge', 'Avatar', 'Tabs', 'Table', 'Separator'],
+                '交互结构': ['Dialog', 'DropdownMenu'],
+                '反馈状态': ['Alert', 'Progress', 'Skeleton']
               }).map(([category, types]) => (
                 <div key={category}>
                   <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-2">

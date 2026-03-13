@@ -8,6 +8,21 @@ import {
 // import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const withDimensionStyles = (item?: ComponentItem) => ({
+  width:
+    item?.style?.width === 'full'
+      ? '100%'
+      : item?.style?.width === 'auto' || !item?.style?.width
+        ? undefined
+        : item.style.width,
+  height:
+    item?.style?.height === 'full'
+      ? '100%'
+      : item?.style?.height === 'auto' || !item?.style?.height
+        ? undefined
+        : item.style.height
+});
+
 export const feedbackComponents: Record<string, ComponentConfig> = {
   Alert: {
     name: '提示 (Alert)',
@@ -31,7 +46,7 @@ export const feedbackComponents: Record<string, ComponentConfig> = {
         borderRadius: styleFromItem.borderRadius !== undefined ? `${styleFromItem.borderRadius}px` : (theme ? `${theme.radius}px` : undefined),
         borderWidth: styleFromItem.borderWidth !== undefined ? `${styleFromItem.borderWidth}px` : (theme?.borderWidth ? `${theme.borderWidth}px` : undefined),
         padding: styleFromItem.padding !== undefined ? `${styleFromItem.padding}px` : undefined,
-        width: styleFromItem.width === 'full' ? '100%' : undefined
+        ...withDimensionStyles(item)
       };
       return (
         <Alert 
@@ -67,7 +82,7 @@ export const feedbackComponents: Record<string, ComponentConfig> = {
       // Only change the filled bar color based on item.style.backgroundColor; keep track and labels using theme
       const fillColor = styleFromItem.backgroundColor ?? theme?.primary;
       return (
-        <div className="w-full space-y-2">
+        <div className="w-full space-y-2" style={withDimensionStyles(item)}>
           {progressProps.label && (
             <div className="flex justify-between text-sm">
               <span className="font-medium" style={{ color: theme?.foreground }}>
@@ -114,7 +129,7 @@ export const feedbackComponents: Record<string, ComponentConfig> = {
       const bg = styleFromItem.backgroundColor ?? theme?.muted;
       const radius = styleFromItem.borderRadius !== undefined ? `${styleFromItem.borderRadius}px` : (theme ? `${theme.radius}px` : undefined);
       return (
-        <div className="w-full space-y-3">
+        <div className="w-full space-y-3" style={withDimensionStyles(item)}>
           <div className="flex items-center space-x-4">
             <Skeleton 
               className="h-12 w-12 rounded-full" 

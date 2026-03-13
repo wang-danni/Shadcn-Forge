@@ -1,10 +1,13 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-    readonly VITE_GEMINI_API_KEY: string;
-    // 如果有其他环境变量，在这里添加
-  }
-  
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
+  readonly VITE_AI_API_URL?: string;
+  readonly VITE_AI_MODEL?: string;
+  readonly VITE_AI_PROXY_TARGET?: string;
+  readonly VITE_GEMINI_API_KEY?: string;
+  readonly VITE_GEMINI_MODEL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

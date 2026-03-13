@@ -17,6 +17,7 @@ function buildStyleString(style?: ComponentItem['style']): string {
   if (style.padding !== undefined) parts.push(`padding: '${style.padding}px'`);
   if (style.fontSize !== undefined) parts.push(`fontSize: '${style.fontSize}px'`);
   if (style.width !== undefined) parts.push(`width: ${style.width === 'full' ? "'100%'" : (style.width === 'auto' ? 'undefined' : `'${style.width}'`)}`);
+  if (style.height !== undefined) parts.push(`height: ${style.height === 'full' ? "'100%'" : (style.height === 'auto' ? 'undefined' : `'${style.height}'`)}`);
 
   const filtered = parts.filter(p => !p.includes('undefined'));
   if (filtered.length === 0) return '{}';
@@ -42,6 +43,10 @@ export function generateExternalCSS(items: ComponentItem[]): string {
     if (s.width !== undefined) {
       if (s.width === 'full') props.push(`  width: 100%;`);
       else if (s.width !== 'auto') props.push(`  width: ${s.width};`);
+    }
+    if (s.height !== undefined) {
+      if (s.height === 'full') props.push(`  height: 100%;`);
+      else if (s.height !== 'auto') props.push(`  height: ${s.height};`);
     }
     if (s.direction) {
       props.push(`  display: flex;`);
@@ -91,6 +96,10 @@ function mapStyleToTailwind(style?: ComponentItem['style']): string {
   if (style.width !== undefined) {
     if (style.width === 'full') classes.push('w-full');
     else if (style.width !== 'auto') classes.push(`w-[${style.width}]`);
+  }
+  if (style.height !== undefined) {
+    if (style.height === 'full') classes.push('h-full');
+    else if (style.height !== 'auto') classes.push(`h-[${style.height}]`);
   }
   if (style.direction) {
     classes.push('flex');
@@ -157,6 +166,7 @@ ${spaces}</Button>`;
 ${spaces}  <CardHeader>
 ${spaces}    <CardTitle>${props.title || 'Card Title'}</CardTitle>
 ${props.description ? `${spaces}    <CardDescription>${props.description}</CardDescription>\n` : ''}${spaces}  </CardHeader>
+${props.content ? `${spaces}  <CardContent>${props.content}</CardContent>\n` : ''}${props.footerPrimary || props.footerSecondary ? `${spaces}  <CardFooter className="justify-end gap-2">\n${props.footerSecondary ? `${spaces}    <Button variant="outline" size="sm">${props.footerSecondary}</Button>\n` : ''}${props.footerPrimary ? `${spaces}    <Button size="sm">${props.footerPrimary}</Button>\n` : ''}${spaces}  </CardFooter>\n` : ''}
 ${spaces}</Card>`;
     }
 
@@ -249,8 +259,14 @@ export function generateReactCode(items: ComponentItem[], theme: Theme, styleMod
   const imports = new Set<string>();
   items.forEach(item => imports.add(item.type));
 
+  const importMap: Record<string, string> = {
+    Card: `import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';`,
+    Avatar: `import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';`,
+    Alert: `import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';`
+  };
+
   const importStatements = Array.from(imports)
-    .map(comp => `import { ${comp} } from '@/components/ui/${comp.toLowerCase()}';`)
+    .map((comp) => importMap[comp] || `import { ${comp} } from '@/components/ui/${comp.toLowerCase()}';`)
     .join('\n');
 
   const styleImport = styleMode === 'external' ? "import './styles.css';\n" : '';

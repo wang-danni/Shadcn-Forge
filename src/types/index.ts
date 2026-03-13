@@ -47,8 +47,13 @@ export interface ComponentItem {
     padding?: number; // px
     fontSize?: number; // px
     width?: 'auto' | 'full' | string;
+    height?: 'auto' | 'full' | string;
     // 每个组件可单独设置排版方向
     direction?: 'column' | 'row';
+    // 组件在画布中的对齐方式
+    alignSelf?: 'start' | 'center' | 'end' | 'stretch';
+    // 横向布局时的连续位置偏移，单位为百分比
+    horizontalOffset?: number;
   };
 }
 
@@ -117,6 +122,9 @@ export interface AIComponentSchema {
 export interface CardProps {
   title: string;
   description?: string;
+  content?: string;
+  footerPrimary?: string;
+  footerSecondary?: string;
 }
 
 export interface AvatarProps {
@@ -143,6 +151,34 @@ export interface ButtonProps {
 export interface InputProps {
   placeholder: string;
   type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+}
+
+export interface SelectProps {
+  placeholder: string;
+  options: string;
+}
+
+export interface TabsProps {
+  tabs: string;
+  defaultTab: string;
+  content: string;
+}
+
+export interface DialogProps {
+  triggerText: string;
+  title: string;
+  description: string;
+  confirmText: string;
+}
+
+export interface DropdownMenuProps {
+  triggerText: string;
+  items: string;
+}
+
+export interface TableProps {
+  columns: string;
+  rows: string;
 }
 
 export interface TextareaProps {
