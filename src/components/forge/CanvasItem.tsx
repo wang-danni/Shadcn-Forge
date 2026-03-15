@@ -143,7 +143,7 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
               duplicateComponent(item.id);
             }}
             className="p-1 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded"
-            title="克隆 (Ctrl+D)"
+            title="克隆组件"
           >
             <CopyPlus size={14} />
           </button>

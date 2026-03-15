@@ -85,6 +85,7 @@ export interface ForgeStore {
   theme: Theme;
   layout: Layout;
   canvasItems: ComponentItem[];
+  clipboardItems: ComponentItem[];
   activeComponentId: string | null;
   selectedComponentIds: string[];
   isPreviewMode: boolean;
@@ -107,6 +108,8 @@ export interface ForgeStore {
   updateComponentParent: (id: string, parentId?: string) => void;
   removeComponent: (id: string) => void;
   duplicateComponent: (id: string) => void;
+  copySelectedComponents: () => void;
+  pasteClipboard: () => void;
   reorderComponent: (draggedId: string, targetId: string, position?: 'before' | 'after') => void;
   insertComponentAt: (type: string, targetId: string | null, position?: 'before' | 'after') => void;
   moveComponent: (id: string, direction: 'up' | 'down') => void;

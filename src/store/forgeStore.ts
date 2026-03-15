@@ -31,11 +31,71 @@ const DEFAULT_LAYOUT = {
   borderWidth: 1
 };
 
+const cloneComponentItem = (item: ComponentItem): ComponentItem => ({
+  ...item,
+  props: structuredClone(item.props),
+  style: item.style ? structuredClone(item.style) : undefined
+});
+
+const collectNestedIds = (items: ComponentItem[], rootIds: string[]) => {
+  const ids = new Set(rootIds);
+  const queue = [...rootIds];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+    items.forEach((item) => {
+      if (item.parentId === currentId && !ids.has(item.id)) {
+        ids.add(item.id);
+        queue.push(item.id);
+      }
+    });
+  }
+
+  return ids;
+};
+
+const filterTopLevelIds = (items: ComponentItem[], ids: string[]) => {
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+  const idSet = new Set(ids);
+
+  return ids.filter((id) => {
+    let parentId = itemMap.get(id)?.parentId;
+
+    while (parentId) {
+      if (idSet.has(parentId)) {
+        return false;
+      }
+      parentId = itemMap.get(parentId)?.parentId;
+    }
+
+    return true;
+  });
+};
+
+const getPasteInsertIndex = (items: ComponentItem[], anchorIds: string[]) => {
+  if (anchorIds.length === 0) {
+    return items.length;
+  }
+
+  const anchorSet = collectNestedIds(items, anchorIds);
+  let insertIndex = items.length;
+
+  for (let index = items.length - 1; index >= 0; index -= 1) {
+    if (anchorSet.has(items[index].id)) {
+      insertIndex = index + 1;
+      break;
+    }
+  }
+
+  return insertIndex;
+};
+
 export const useForgeStore = create<ForgeStore>()(persist((set, get) => ({
   isDarkMode: false,
   theme: DEFAULT_THEME,
   layout: DEFAULT_LAYOUT,
   canvasItems: INITIAL_ITEMS,
+  clipboardItems: [],
   activeComponentId: null,
   selectedComponentIds: [],
   isPreviewMode: false,
@@ -216,10 +276,8 @@ export const useForgeStore = create<ForgeStore>()(persist((set, get) => ({
       if (!itemToCopy) return state;
 
       const newItem: ComponentItem = {
-        ...itemToCopy,
-        id: generateId(),
-        // 深拷贝 props，防止原组件与副本修改互相影响
-        props: structuredClone(itemToCopy.props)
+        ...cloneComponentItem(itemToCopy),
+        id: generateId()
       };
 
       const newItems = [...state.canvasItems];
@@ -230,6 +288,71 @@ export const useForgeStore = create<ForgeStore>()(persist((set, get) => ({
         ...state._saveHistory(newItems),
         activeComponentId: newItem.id,
         selectedComponentIds: [newItem.id]
+      };
+    }),
+
+  copySelectedComponents: () =>
+    set((state) => {
+      const sourceIds = state.selectedComponentIds.length > 0
+        ? state.selectedComponentIds
+        : state.activeComponentId
+          ? [state.activeComponentId]
+          : [];
+
+      if (sourceIds.length === 0) {
+        return state;
+      }
+
+      const topLevelIds = filterTopLevelIds(state.canvasItems, sourceIds);
+      const idsToCopy = collectNestedIds(state.canvasItems, topLevelIds);
+
+      return {
+        clipboardItems: state.canvasItems
+          .filter((item) => idsToCopy.has(item.id))
+          .map((item) => cloneComponentItem(item))
+      };
+    }),
+
+  pasteClipboard: () =>
+    set((state) => {
+      if (state.clipboardItems.length === 0) {
+        return state;
+      }
+
+      const existingIds = new Set(state.canvasItems.map((item) => item.id));
+      const idMap = new Map(state.clipboardItems.map((item) => [item.id, generateId()]));
+      const pastedTopLevelIds: string[] = [];
+
+      const pastedItems = state.clipboardItems.map((item) => {
+        const remappedParentId = item.parentId
+          ? (idMap.get(item.parentId) ?? (existingIds.has(item.parentId) ? item.parentId : undefined))
+          : undefined;
+        const nextItem: ComponentItem = {
+          ...cloneComponentItem(item),
+          id: idMap.get(item.id)!,
+          parentId: remappedParentId
+        };
+
+        if (!remappedParentId || !idMap.has(item.parentId ?? '')) {
+          pastedTopLevelIds.push(nextItem.id);
+        }
+
+        return nextItem;
+      });
+
+      const anchorIds = state.selectedComponentIds.length > 0
+        ? filterTopLevelIds(state.canvasItems, state.selectedComponentIds)
+        : state.activeComponentId
+          ? [state.activeComponentId]
+          : [];
+      const insertIndex = getPasteInsertIndex(state.canvasItems, anchorIds);
+      const newItems = [...state.canvasItems];
+      newItems.splice(insertIndex, 0, ...pastedItems);
+
+      return {
+        ...state._saveHistory(newItems),
+        activeComponentId: pastedTopLevelIds[pastedTopLevelIds.length - 1] ?? pastedItems[pastedItems.length - 1]?.id ?? null,
+        selectedComponentIds: pastedTopLevelIds.length > 0 ? pastedTopLevelIds : pastedItems.map((item) => item.id)
       };
     }),
 
@@ -479,6 +602,7 @@ export const useForgeStore = create<ForgeStore>()(persist((set, get) => ({
       theme: DEFAULT_THEME,
       layout: DEFAULT_LAYOUT,
       canvasItems: INITIAL_ITEMS,
+      clipboardItems: [],
       history: [INITIAL_ITEMS],
       historyStep: 0,
       aiSessionLog: [],
@@ -504,6 +628,7 @@ export const useForgeStore = create<ForgeStore>()(persist((set, get) => ({
       ...currentState,
       ...persisted,
       canvasItems: restoredCanvasItems,
+      clipboardItems: [],
       history: [JSON.parse(JSON.stringify(restoredCanvasItems))],
       historyStep: 0,
       activeComponentId: null,

@@ -22,7 +22,8 @@ const App: React.FC = () => {
         selectedComponentIds,
         removeComponent,
         removeSelectedComponents,
-        duplicateComponent,
+        copySelectedComponents,
+        pasteClipboard,
         undo,
         redo,
         clearSelection
@@ -39,10 +40,17 @@ const App: React.FC = () => {
         return;
       }
 
-      // Ctrl/Cmd + D → 复制选中组件
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd' && activeComponentId) {
+      // Ctrl/Cmd + C → 复制选中组件到剪贴板
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && (activeComponentId || selectedComponentIds.length > 0)) {
         e.preventDefault();
-        duplicateComponent(activeComponentId);
+        copySelectedComponents();
+        return;
+      }
+
+      // Ctrl/Cmd + V → 粘贴剪贴板中的组件
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+        e.preventDefault();
+        pasteClipboard();
         return;
       }
 
@@ -122,8 +130,10 @@ const Footer: React.FC = () => {
         <span className="hidden md:flex items-center gap-3 text-slate-400 normal-case tracking-normal font-medium">
           <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">Del</kbd>
           <span className="text-[9px]">删除</span>
-          <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">⌃D</kbd>
+          <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">⌃C</kbd>
           <span className="text-[9px]">复制</span>
+          <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">⌃V</kbd>
+          <span className="text-[9px]">粘贴</span>
           <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">⌃Z</kbd>
           <span className="text-[9px]">撤销</span>
           <kbd className="rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono">Esc</kbd>
