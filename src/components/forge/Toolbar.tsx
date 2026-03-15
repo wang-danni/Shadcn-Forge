@@ -165,7 +165,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ activeTab, setActiveTab }) => 
         className="h-14 border-b border-slate-200 dark:border-slate-800/60 px-6 flex items-center gap-6 backdrop-blur-xl relative" 
         style={{ 
           backgroundColor: layout.appBg + 'E6',
-          zIndex: 30
+          zIndex: 90
         }}
         onClick={(e) => e.stopPropagation()}
       >

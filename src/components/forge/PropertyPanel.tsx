@@ -915,9 +915,9 @@ export const PropertyPanel: React.FC = () => {
       </div>
 
       {previewCandidate && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" onClick={() => setPreviewCandidateIndex(null)}>
+        <div className="fixed inset-x-0 bottom-0 top-16 z-[70] flex items-start justify-center bg-slate-950/45 p-4 pt-6 backdrop-blur-sm" onClick={() => setPreviewCandidateIndex(null)}>
           <div
-            className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950"
+            className="flex max-h-[calc(100vh-5.5rem)] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-800">
